@@ -1,0 +1,10 @@
+<!-- workouts/templates/workouts/workout_list.html -->
+<h2>המאמן שלך</h2>
+{% for workout in workouts %}
+    <div>
+        <p>תאריך: {{ workout.workout_date }} - קלוריות: {{ workout.calories_burned }}</p>
+        <label for="completed_{{ workout.id }}">ביצעת את האימון?</label>
+        <input type="checkbox" id="completed_{{ workout.id }}" {% if workout.completed %}checked{% endif %}>
+    </div>
+{% endfor %}
+<p>מספר האימונים שנותרו לך: {{ remaining_classes }}</p>

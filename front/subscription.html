@@ -1,0 +1,21 @@
+<!-- users/templates/users/add_subscription.html -->
+
+<form method="POST">
+    {% csrf_token %}
+    <label for="name">שם מלא:</label>
+    <input type="text" id="name" name="name">
+    
+    <label for="email">דוא"ל:</label>
+    <input type="email" id="email" name="email">
+    
+    <label for="age">גיל:</label>
+    <input type="number" id="age" name="age">
+    
+    <label for="subscription_valid_until">תאריך תפוגת מנוי:</label>
+    <input type="date" id="subscription_valid_until" name="subscription_valid_until">
+    
+    <label for="days_per_week">מספר ימי השיעורים בשבוע:</label>
+    <input type="number" id="days_per_week" name="days_per_week">
+    
+    <button type="submit">הוסף מנוי</button>
+</form>
