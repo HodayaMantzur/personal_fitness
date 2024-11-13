@@ -1,20 +1,15 @@
-# workouts/models.py
 from django.db import models
-from users.models import User
+from django.conf import settings  # ייבוא הגדרת המודל המשתמש ממערכת ההגדרות
+from django.utils.timezone import now  # יש לוודא שאתה מייבא את now מ- timezone
 
 class Workout(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    workout_date = models.DateTimeField()
-    calories_burned = models.FloatField()
-    completed = models.BooleanField(default=False)  # שדה לסימון אם האימון בוצע
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # עדכון ל- AUTH_USER_MODEL
+    date = models.DateField()
+    completed = models.BooleanField(default=False)  # שדה המצביע אם האימון בוצע
+    calories_burned = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.user.username} - {self.workout_date}"
+        return f"{self.user.username} - {self.date}"
 
-    @property
-    def remaining_classes(self):
-        """חשב את מספר השיעורים שנותרו למנוי"""
-        subscription = self.user.subscription
-        total_classes = subscription.total_classes
-        completed_classes = Workout.objects.filter(user=self.user, completed=True).count()
-        return total_classes - completed_classes
+    def completed_today(self):
+        return self.date == now().date()
