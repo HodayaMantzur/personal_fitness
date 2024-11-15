@@ -171,13 +171,14 @@
 
         <div id="existing-member-form-container" class="card" style="display: none;">
             <h2 class="text-center">מנוי קיים</h2>
-            <p class="text-center">צפה באימונים שלך ונהל אותם.</p>
-            <button id="login-btn" data-login-url="{% url 'login' %}">כניסת מנוי</button>
+            <p class="text-center">התחבר עם פרטי המנוי שלך</p>
+            <div class="text-center">
+                <a href="{% url 'login' %}" class="btn btn-secondary-custom">כניסת מנוי</a>
+            </div>        
         </div>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -189,8 +190,7 @@
     
             // כפתור מנוי קיים
             document.getElementById('existing-member-btn').addEventListener('click', function () {
-                document.getElementById('existing-member-form-container').style.display = 'block';
-                document.getElementById('create-member-form-container').style.display = 'none';
+                window.location.href = "{% url 'login' %}";
             });
     
             // טיפול בהגשה של טופס יצירת המנוי
@@ -198,52 +198,35 @@
                 e.preventDefault();
     
                 const daysPerWeek = parseInt(document.getElementById('days_per_week').value);
-                if (daysPerWeek < 1 || daysPerWeek > 3) {
-                    alert("מס' האימונים בשבוע חייב להיות בין 1 ל-3.");
+                if (daysPerWeek > 3) {
+                    alert('המספר המרבי של אימונים בשבוע הוא 3!');
                     return;
                 }
     
-                // אוספים את נתוני הטופס
-                const formData = new FormData(e.target);
-                const userData = {
-                    name: formData.get('name'),
-                    email: formData.get('email'),
-                    id_number: formData.get('id_number'),
-                    phone_number: formData.get('phone_number'),
-                    age: parseInt(formData.get('age'), 10),
-                    subscription_valid_until: new Date(formData.get('subscription_valid_until')).toISOString().split('T')[0],
-                    days_per_week: parseInt(formData.get('days_per_week'), 10),
-                    day_of_week: formData.get('day_of_week'),
-                    weight: parseFloat(formData.get('weight')),
-                    height: parseFloat(formData.get('height'))
-                };
-    
-                // שולחים את הנתונים לשרת
-                axios.post('http://127.0.0.1:8000/users/create/', JSON.stringify(userData), {
-                    headers: { 'Content-Type': 'application/json' }
+                // שליחה של טופס
+                axios.post('/create_subscription/', {
+                    name: document.getElementById('name').value,
+                    email: document.getElementById('email').value,
+                    id_number: document.getElementById('id_number').value,
+                    phone_number: document.getElementById('phone_number').value,
+                    age: document.getElementById('age').value,
+                    days_per_week: daysPerWeek,
+                    day_of_week: document.getElementById('day_of_week').value,
+                    subscription_valid_until: document.getElementById('subscription_valid_until').value,
+                    weight: document.getElementById('weight').value,
+                    height: document.getElementById('height').value
                 })
-                .then(response => {
-                    if (response.data && response.data.message === 'המשתמש נוצר בהצלחה!') {
-                        alert("המנוי נוצר בהצלחה!");
-                    } else {
-                        alert("נכשל ביצירת המנוי: אין הודעת הצלחה.");
-                    }
+                .then(function (response) {
+                    alert('המנוי נוצר בהצלחה!');
+                    document.getElementById('create-member-form').reset();
+                    document.getElementById('create-member-form-container').style.display = 'none';
                 })
-                .catch(error => {
-                    alert("נכשל ביצירת המנוי: " + (error.response ? JSON.stringify(error.response.data) : "שגיאה כללית"));
+                .catch(function (error) {
+                    alert('שגיאה בעת יצירת המנוי.');
+                    console.error(error);
                 });
-            });
-    
-            // טיפול בכפתור לוגין
-            var loginUrl = document.getElementById('login-btn').getAttribute('data-login-url');
-            console.log("Login URL: ", loginUrl); // הדפס את ה-URL שנמצא ב-data-login-url
-
-            document.getElementById('login-btn').addEventListener('click', function () {
-                window.location.href = loginUrl;
             });
         });
     </script>
-    
-
 </body>
 </html>

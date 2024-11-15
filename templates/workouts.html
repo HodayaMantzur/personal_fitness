@@ -58,13 +58,16 @@
             }
         })
         .then(response => {
+            // עדכון המידע על האימונים בממשק
             document.getElementById('total-classes').innerText = response.data.total_classes_available || 0;
             document.getElementById('completed-workouts').innerText = response.data.completed_workouts || 0;
             document.getElementById('missed-workouts').innerText = response.data.missed_workouts || 0;
+            document.getElementById('remaining-classes').innerText = response.data.remaining_classes || 0;
 
             const workouts = response.data.workouts;
             const workoutsList = document.getElementById('workouts-list');
 
+            // הצגת כל האימונים של המשתמש
             workouts.forEach(workout => {
                 const listItem = document.createElement('li');
                 listItem.className = "list-group-item";

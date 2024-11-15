@@ -35,7 +35,7 @@
 <body>
     <div class="container">
         <div class="card">
-            <h1 class="text-center">כניסת משתמש</h1>
+            <h1 class="text-center">כניסת מנוי</h1>
             <form id="login-form">
                 <div class="form-group">
                     <label for="name">שם מלא:</label>
@@ -51,42 +51,29 @@
         </div>
     </div>
 
-    <!-- הוספת הסקריפט לאחר תגית ה-body -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         document.getElementById('login-form').addEventListener('submit', function(event) {
-            event.preventDefault();  // מניעת שליחה אוטומטית של הטופס
-
+            event.preventDefault();
+            
             const name = document.getElementById('name').value;
             const id_number = document.getElementById('id_number').value;
 
-            axios.post('http://127.0.0.1:8000/users/login/', {
+            axios.post('/login/', {
                 name: name,
                 id_number: id_number
             })
-            .then(response => {
-                // שמירת ה-TOKEN ב-localStorage
-                localStorage.setItem('authToken', response.data.access);
-                localStorage.setItem('refreshToken', response.data.refresh);
-
-                // הפניית המשתמש לדף האימונים (לא API, אלא HTML)
-                
-                window.location.href = '/workouts/';  // הפניית המשתמש לדף ה-HTML של האימונים
+            .then(function(response) {
+                alert('התחברת בהצלחה!');
+                // כאן תוכל לאחסן את הטוקן ב-localStorage או cookies
+                localStorage.setItem('access_token', response.data.access);
+                window.location.href = '/index/'; // או לעמוד הבא
             })
-            .catch(error => {
-                console.error("Login failed:", error);
-                alert("שגיאה בהתחברות");
+            .catch(function(error) {
+                alert('שגיאה בהתחברות, אנא נסה שנית');
+                console.error(error);
             });
         });
-
-        // פונקציה לביצוע Logout
-        function logout() {
-            // מסיר את הטוקן מ-localStorage ומפנה לדף הלוגין
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('refreshToken');
-            // localStorage.removeItem('username');
-            window.location.href = 'login.html'; // הפנייה לעמוד הלוגין
-        }
     </script>
 </body>
 </html>

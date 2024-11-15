@@ -9,10 +9,13 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import serializers
 from django.shortcuts import render
+from .serializers import CustomTokenObtainPairSerializer
 
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 def login_view(request):
-    return render(request, 'users/login.html')
+    return render(request, 'login.html')
 
 
 def index(request):

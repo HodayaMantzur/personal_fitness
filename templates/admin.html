@@ -15,6 +15,9 @@
                     <th>שם</th>
                     <th>אימייל</th>
                     <th>טלפון</th>
+                    <th>מספר אימונים</th>
+                    <th>אימונים בוצעו</th>
+                    <th>אימונים שהוחמצו</th>
                     <th>מחק מנוי</th>
                 </tr>
             </thead>
@@ -25,6 +28,17 @@
                         <td>{{ user.name }}</td>
                         <td>{{ user.email }}</td>
                         <td>{{ user.phone_number }}</td>
+                        <td>{{ user.workouts.count }}</td>  <!-- הצגת מספר האימונים -->
+                        <td>
+                            {% with completed_workouts=user.workouts.filter(completed=True) %}
+                                {{ completed_workouts.count }}  <!-- מספר האימונים שבוצעו -->
+                            {% endwith %}
+                        </td>
+                        <td>
+                            {% with missed_workouts=user.workouts.filter(completed=False) %}
+                                {{ missed_workouts.count }}  <!-- מספר האימונים שהוחמצו -->
+                            {% endwith %}
+                        </td>
                         <td>
                             <form action="{% url 'delete_subscription' user.id %}" method="post">
                                 {% csrf_token %}
