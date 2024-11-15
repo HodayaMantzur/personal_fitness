@@ -13,7 +13,7 @@ from django.shortcuts import render
 
 
 
-def workout_list(request):
+def workout_list_view(request):
     return render(request, 'workouts.html')  # החזר את קובץ ה-HTML
 
 def login(request):
