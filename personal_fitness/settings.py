@@ -40,13 +40,29 @@ INSTALLED_APPS = [
     'workouts',
     'users',
     'rest_framework',
+    'rest_framework_simplejwt',
     'personal_fitness',
     'corsheaders',
     'django_extensions',
-
+    
 ]
 
 AUTH_USER_MODEL = 'users.User' 
+
+AUTH_NAME_MODEL = 'names.Name'
+
+LOGIN_URL = '/login/'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # מגביל את הגישה רק למי שמחובר
+    ],
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -64,16 +80,21 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5500",  # כתובת פרונטאנד ב-localhost
+    "http://127.0.0.1:8000"   # כתובת השרת של Django
+
     #"http://127.0.0.1:5500/front/index.html" # הוסף כאן את כתובת האתר של הפרונטאנד שלך
 ]
 
 
 ROOT_URLCONF = 'personal_fitness.urls'
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+print(BASE_DIR)
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],  # תיקיית front מחוץ לתיקיית personal_fitness
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -85,6 +106,8 @@ TEMPLATES = [
         },
     },
 ]
+
+
 
 WSGI_APPLICATION = 'personal_fitness.wsgi.application'
 

@@ -9,7 +9,7 @@ class Workout(models.Model):
     calories_burned = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.user.username} - {self.date}"
+        return f"{self.user.name} ({self.user.id_number}) - {self.date}"  # הצגת שם המשתמש ומספר הזהות
 
     def completed_today(self):
         return self.date == now().date()

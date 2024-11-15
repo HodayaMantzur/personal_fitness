@@ -15,7 +15,7 @@ class UserAdmin(admin.ModelAdmin):
     # עדכון שדות ה-fieldsets כך שיכללו את id_number במקום username
     fieldsets = (
         (None, {
-            'fields': ('id_number', 'password', 'name', 'last_name', 'email', 'phone_number', 'is_active')
+            'fields': ('id_number', 'name', 'email', 'phone_number', 'is_active')
         }),
         ('Subscription details', {
             'fields': ('subscription_valid_until', 'days_per_week', 'start_date', 'end_date')

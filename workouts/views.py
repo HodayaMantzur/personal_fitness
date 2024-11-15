@@ -1,4 +1,5 @@
 # workouts/views.py
+from rest_framework import generics
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
@@ -6,6 +7,30 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Workout
 from .serializers import WorkoutSerializer
 from django.utils.timezone import now
+from rest_framework_simplejwt.views import TokenObtainPairView
+from users.serializers import CustomTokenObtainPairSerializer
+from django.shortcuts import render
+
+
+
+def workout_list(request):
+    return render(request, 'workouts.html')  # החזר את קובץ ה-HTML
+
+def login(request):
+    return render(request, 'login.html')
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+class WorkoutListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # כאן תקבל את האימונים על פי המשתמש שנכנס
+        return Workout.objects.filter(user=self.request.user)
+    
+    serializer_class = WorkoutSerializer
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])  # רק משתמשים מחוברים יוכלו לגשת
@@ -43,6 +68,19 @@ def workout_detail(request, pk):
         'completed_workouts': completed_workouts,
         'missed_workouts': missed_workouts
     })
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_workout(request):
+    """
+    פונקציה להוספת אימון חדש למשתמש המחובר.
+    מצפה לנתונים כמו תאריך, משך זמן, שריפת קלוריות ועוד.
+    """
+    serializer = WorkoutSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(user=request.user)  # מקשר את האימון למשתמש המחובר
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PATCH'])
 @permission_classes([IsAuthenticated])

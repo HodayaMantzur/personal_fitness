@@ -1,12 +1,53 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import User
-from datetime import date
+from datetime import datetime
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import serializers
+from django.shortcuts import render
+
+
+def login_view(request):
+    return render(request, 'users/login.html')
+
+
+def index(request):
+    return render(request, 'index.html')
+
+# Serializer מותאם אישית להפקת Token על פי שם ומספר זהות
+class CustomTokenObtainPairSerializer(serializers.Serializer):
+    id_number = serializers.CharField()
+    name = serializers.CharField()
+
+    def validate(self, attrs):
+        id_number = attrs.get('id_number')
+        name = attrs.get('name')
+
+        # נוודא שהמשתמש קיים לפי שם ומספר זהות
+        try:
+            user = User.objects.get(id_number=id_number, name=name)
+        except User.DoesNotExist:
+            raise serializers.ValidationError('Invalid credentials')
+
+        # יצירת טוקן על פי המשתמש
+        refresh = RefreshToken.for_user(user)
+        return {
+            'access': str(refresh.access_token),
+            'refresh': str(refresh)
+        }
+
+# View מותאם אישית לשימוש ב- Token
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
 
 @csrf_exempt  # להסרת בדיקת CSRF - נדרש רק לפיתוח, לא לפרודקשן
 @api_view(['POST'])
+@permission_classes([AllowAny])  # מאפשר גישה ללא אימות
 def create_user(request):
     if request.method == 'POST':
         try:
@@ -20,6 +61,12 @@ def create_user(request):
             days_per_week = data.get('days_per_week', 0)  # ברירת מחדל ל-0 אם לא נשלח
             weight = data.get('weight')
             height = data.get('height')
+
+            # המרת התאריך מ- str ל- datetime.date
+            try:
+                subscription_valid_until = datetime.strptime(subscription_valid_until, '%Y-%m-%d').date()
+            except ValueError:
+                return JsonResponse({'error': 'תאריך לא חוקי'}, status=400)
 
             # בדיקה האם כל השדות החיוניים הוזנו
             if not all([name, email, subscription_valid_until, id_number]):
