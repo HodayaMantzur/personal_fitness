@@ -10,6 +10,8 @@ from django.utils.timezone import now
 from rest_framework_simplejwt.views import TokenObtainPairView
 from users.serializers import CustomTokenObtainPairSerializer
 from django.shortcuts import render
+from datetime import date
+
 
 
 
@@ -35,18 +37,22 @@ class WorkoutListView(generics.ListAPIView):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])  # רק משתמשים מחוברים יוכלו לגשת
 def workout_list(request):
-    workouts = Workout.objects.filter(user=request.user)
+    today = date.today()
+    workouts = Workout.objects.filter(user=request.user).order_by('date')
     serializer = WorkoutSerializer(workouts, many=True)
 
     total_classes_available = request.user.total_classes_available()
     completed_workouts = request.user.completed_workouts_count()
     missed_workouts = request.user.missed_workouts_count()
+    
+
 
     return Response({
         'workouts': serializer.data,
         'total_classes_available': total_classes_available,
         'completed_workouts': completed_workouts,
-        'missed_workouts': missed_workouts
+        'missed_workouts': missed_workouts,
+        'today': today
     })
 
 @api_view(['GET'])

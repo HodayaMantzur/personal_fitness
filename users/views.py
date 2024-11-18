@@ -65,6 +65,7 @@ def create_user(request):
             weight = data.get('weight')
             height = data.get('height')
 
+
             # המרת התאריך מ- str ל- datetime.date
             try:
                 subscription_valid_until = datetime.strptime(subscription_valid_until, '%Y-%m-%d').date()
@@ -102,6 +103,8 @@ def create_user(request):
                 days_per_week=days_per_week,
                 weight=weight,
                 height=height,
+                start_date=datetime.today().date(),  # הנחה שהמנוי מתחיל בתאריך הנוכחי
+                end_date=subscription_valid_until,  # התוקף עד התאריך שנמסר
             )
 
             return JsonResponse({
@@ -118,6 +121,8 @@ def create_user(request):
                     'total_classes_available': user.total_classes_available(),
                     'missed_workouts_count': user.missed_workouts_count(),
                 }
+
+
             })
         except Exception as e:
             return JsonResponse({'error': f"שגיאה: {str(e)}"}, status=400)

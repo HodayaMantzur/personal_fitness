@@ -9,7 +9,7 @@ urlpatterns = [
     path('workouts/', include('workouts.urls')),  # כל האימונים כאן
     path('users/', include('users.urls')),  # שמירה על ה-URLs של המשתמשים
     path('refresh/', TokenRefreshView.as_view(), name='refresh'),
-    path('', TemplateView.as_view(template_name="templates/index.html"), name="index"),
+    # path('', TemplateView.as_view(template_name="front/index.html"), name="index"),
     path('login/', CustomTokenObtainPairView.as_view(), name='login'),
    # path('login/', login_view.as_view(), name='login'),
 

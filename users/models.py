@@ -62,9 +62,20 @@ class User(AbstractUser):
     def total_classes_available(self):
         """מספר האימונים שנותרו למנוי עד סוף התוקף"""
         if self.start_date and self.end_date and self.days_per_week > 0:
-            remaining_weeks = max(0, (self.subscription_valid_until - date.today()).days // 7)
-            return self.days_per_week * remaining_weeks
-        return 0  # מחזיר 0 במידה ואין מספיק נתונים לחישוב
+        # חישוב הזמן שנותר עד סוף המנוי
+            remaining_days = (self.end_date - date.today()).days  # חישוב מספר הימים שנותרו
+            if remaining_days > 0:
+               remaining_weeks = remaining_days // 7  # חישוב מספר השבועות שנותרו
+               total_classes = self.days_per_week * remaining_weeks  # חישוב מספר האימונים שנותרו
+               return total_classes
+        return 0  # מחזיר 0 אם אין מספיק נתונים לחישוב
+
+
+     #   if self.start_date and self.end_date and self.days_per_week > 0:
+          #  remaining_weeks = max(0, (self.subscription_valid_until - date.today()).days // 7)
+          #  total_classes = self.days_per_week * remaining_weeks
+          #  return total_classes        
+        # return 0  # מחזיר 0 במידה ואין מספיק נתונים לחישוב
 
     def completed_workouts_count(self):
         """מספר האימונים שהמשתמש סיים עד היום"""

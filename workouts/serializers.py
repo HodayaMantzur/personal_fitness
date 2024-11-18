@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from .models import Workout
+#from users.serializers import UserSerializer  # סריאלייזר מותאם למשתמש
 
 class WorkoutSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
     is_today = serializers.SerializerMethodField()
     total_classes_available = serializers.SerializerMethodField()
     completed_workouts = serializers.SerializerMethodField()
@@ -10,6 +12,12 @@ class WorkoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Workout
         fields = ['id', 'user', 'date', 'completed', 'is_today', 'calories_burned', 'total_classes_available', 'completed_workouts', 'missed_workouts']
+
+    def get_user(self, obj):
+        return {
+            "name": obj.user.name,
+            "id_number": obj.user.id_number
+        }
 
     def get_is_today(self, obj):
         return obj.completed_today()

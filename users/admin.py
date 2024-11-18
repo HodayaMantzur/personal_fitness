@@ -9,7 +9,10 @@ class UserAdmin(admin.ModelAdmin):
 
     # פונקציה למצגת של total_classes
     def total_classes_display(self, obj):
-        return obj.total_classes_available() if obj.total_classes_available() is not None else '0'
+        total_classes = obj.total_classes_available()
+     #   return obj.total_classes_available() if obj.total_classes_available() is not None else '0'
+        print(f"Total classes available for {obj.name}: {total_classes}")  # הדפס את התוצאה לעקוב אחרי החישוב
+        return total_classes if total_classes is not None and total_classes > 0 else '0'
     total_classes_display.short_description = 'Total Classes'
 
     # עדכון שדות ה-fieldsets כך שיכללו את id_number במקום username

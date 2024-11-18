@@ -10,6 +10,8 @@ urlpatterns = [
  #   path('workouts/', views.workout_list, name='workouts'),
     path('list/', views.workout_list, name='workout_list'),  # דף עם רשימת אימונים
     path('add/', views.add_workout, name='add_workout'),  # הוספת אימון חדש
+    path('<int:pk>/update/', views.workout_update, name='workout-update'),
+
 
     # נתיבים נוספים אם יש צורך
 ]
