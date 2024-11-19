@@ -1,6 +1,13 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from .models import User
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'name', 'email', 'phone_number','workouts_count','completed_workouts', 'id_number', 'age', 'subscription_valid_until', 'days_per_week', 'weight', 'height'] 
+
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     id_number = serializers.CharField(write_only=True)  # שדה write_only כך שלא יוחזר ב-Response

@@ -1,15 +1,19 @@
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import serializers
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import User
 from datetime import datetime
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import serializers
 from django.shortcuts import render
-from .serializers import CustomTokenObtainPairSerializer
+from .serializers import CustomTokenObtainPairSerializer, UserSerializer
+
+
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
@@ -21,6 +25,35 @@ def login_view(request):
 def index(request):
     return render(request, 'index.html')
 
+# def admin_view(request):
+#     users = User.objects.all()
+#     users_data = [
+#         {
+#             'id_number': user.id_number,
+#             'name': user.name,
+#             'email': user.email,
+#             'phone_number': user.phone_number,
+#             'workouts_count': user.workouts.count(),
+#             'completed_workouts': user.workouts.filter(status='completed').count(),
+#         }
+#         for user in users
+#     ]
+#     print(users_data)  # הדפסת הנתונים כדי לבדוק אם הם מוגשים נכון
+#     return JsonResponse(users_data, safe=False)
+
+class AdminListView(APIView):
+    def get(self, request):
+        try:
+            # שלוף את כל המנויים
+            users = User.objects.all()
+            # השתמש בסריאליזר להמיר את המשתמשים לפורמט JSON
+            serializer = UserSerializer(users, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            # אם יש שגיאה כלשהי, מחזירים תשובה עם קוד שגיאה 500
+            print(f"Error: {str(e)}")  # הדפס את השגיאה בקונסול של השרת
+            return Response({"error": str(e)}, status=500)
+        
 # Serializer מותאם אישית להפקת Token על פי שם ומספר זהות
 class CustomTokenObtainPairSerializer(serializers.Serializer):
     id_number = serializers.CharField()
@@ -48,6 +81,15 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
 
+@api_view(['DELETE'])
+def delete_user(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+        user.delete()
+        return JsonResponse({'message': 'המנוי נמחק בהצלחה!'}, status=200)
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'המנוי לא נמצא'}, status=404)
+
 @csrf_exempt  # להסרת בדיקת CSRF - נדרש רק לפיתוח, לא לפרודקשן
 @api_view(['POST'])
 @permission_classes([AllowAny])  # מאפשר גישה ללא אימות
@@ -58,6 +100,7 @@ def create_user(request):
             data = json.loads(request.body)
             name = data.get('name')
             email = data.get('email')
+            phone_number = data.get('phone_number')
             id_number = data.get('id_number')  # הוספת id_number
             age = data.get('age')
             subscription_valid_until = data.get('subscription_valid_until')
@@ -97,6 +140,7 @@ def create_user(request):
             user = User.objects.create(
                 name=name,
                 email=email,
+                phone_number=phone_number,
                 id_number=id_number,  # הוספת id_number
                 age=age,
                 subscription_valid_until=subscription_valid_until,
@@ -112,7 +156,9 @@ def create_user(request):
                 'user': {
                     'name': user.name,
                     'email': user.email,
+                    'phone_number': user.phone_number,
                     'age': user.age,
+
                     'days_per_week': user.days_per_week,
                 },
                 'subscription': {

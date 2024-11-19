@@ -3,7 +3,7 @@ from .models import User
 
 class UserAdmin(admin.ModelAdmin):
     # עדכון תצוגת השדות ב- list_display
-    list_display = ('id_number', 'name', 'email', 'age', 'weight', 'height', 'is_active', 'day_of_week', 'total_classes_display')
+    list_display = ('id_number', 'name', 'email','phone_number', 'age', 'weight', 'height', 'is_active', 'day_of_week', 'total_classes_display')
     readonly_fields = ('total_classes_display',)
     list_filter = ('day_of_week',)
 

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from users.views import CustomTokenObtainPairView, login_view
+from users.views import CustomTokenObtainPairView, AdminListView, login_view
 from django.views.generic import TemplateView  # אם אתה רוצה להפנות לדף תבנית
 
 urlpatterns = [
@@ -13,5 +13,4 @@ urlpatterns = [
     path('login/', CustomTokenObtainPairView.as_view(), name='login'),
    # path('login/', login_view.as_view(), name='login'),
 
-  # הפניית נתיב לדף הבית
 ]

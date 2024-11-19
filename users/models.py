@@ -27,7 +27,14 @@ class User(AbstractUser):
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
     height = models.FloatField(null=True, blank=True)
+    workouts = models.ManyToManyField('workouts.Workout', related_name='users', blank=True)  # קשר עם מודל Workout
 
+    def workouts_count(self):
+        return self.workouts.count()
+
+    def completed_workouts(self):
+        return self.workouts.filter(completed=True).count()
+    
     DAY_CHOICES = [
             ('Sun', 'ראשון'),
             ('Mon', 'שני'),
