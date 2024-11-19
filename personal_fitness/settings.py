@@ -28,9 +28,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY','default-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = bool(os.getenv('DEBUG'))
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['personal_fitness.onrender.com']
+
+
+CORS_TROSTED_ORIGINS = ["https://personal-fitness.onrender.com"]
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:5501",  # כתובת פרונטאנד ב-localhost
+    "https://personal-fitness.onrender.com"
+   # "http://127.0.0.1:8000"   # כתובת השרת של Django
+
+    #"http://127.0.0.1:5500/front/index.html" # הוסף כאן את כתובת האתר של הפרונטאנד שלך
+]
 
 
 # Application definition
@@ -84,12 +94,6 @@ MIDDLEWARE = [
 # מאפשר לכל המקורות לשלוח בקשות
 #CORS_ALLOW_ALL_ORIGINS = True  # או לחלופין להשתמש ב- CORS_ALLOWED_ORIGINS אם אתה רוצה לאפשר רק את המקורות הספציפיים
 
-CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:5501",  # כתובת פרונטאנד ב-localhost
-    "http://127.0.0.1:8000"   # כתובת השרת של Django
-
-    #"http://127.0.0.1:5500/front/index.html" # הוסף כאן את כתובת האתר של הפרונטאנד שלך
-]
 
 
 CSRHֹ_COOKIE_SECURE = True
