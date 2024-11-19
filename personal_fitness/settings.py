@@ -92,6 +92,8 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 
+CSRHֹ_COOKIE_SECURE = True
+
 ROOT_URLCONF = 'personal_fitness.urls'
 
 BASE_DIR = Path(__file__).resolve().parent.parent
